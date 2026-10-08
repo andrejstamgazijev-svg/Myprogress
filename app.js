@@ -26,7 +26,17 @@ if(!raw){try{const legacy=JSON.parse(localStorage.getItem("myprogress_v1")||"nul
 const mergeExercises=existing=>{const base=mkExercises(),old=Array.isArray(existing)?existing:[],baseIds=new Set(base.map(e=>e.id));return [...base,...old.filter(e=>e&&e.id&&!baseIds.has(e.id))]};
 let S=raw||D;
 S.lang=S.lang==='lt'||S.lang==='en'?S.lang:D.lang; S.weight=Array.isArray(S.weight)?S.weight:[]; S.measurements=Array.isArray(S.measurements)?S.measurements:[]; S.workouts=Array.isArray(S.workouts)?S.workouts:[]; S.photos=Array.isArray(S.photos)?S.photos:[]; S.nutrition=Array.isArray(S.nutrition)?S.nutrition:[]; S.goals=Array.isArray(S.goals)?S.goals:[]; S.exercises=mergeExercises(S.exercises); S.plans=Array.isArray(S.plans)?S.plans:[]; S.activeSession??=null; S.targetWeight=S.targetWeight??null; S.macroTarget=(S.macroTarget&&typeof S.macroTarget==='object')?S.macroTarget:{calories:null,protein:null,carbs:null,fat:null,water:null}; S.weight.forEach(x=>x.id??=uid()); S.measurements.forEach(x=>x.id??=uid()); S.workouts.forEach(x=>x.id??=uid()); S.photos.forEach(x=>x.id??=uid()); S.nutrition.forEach(x=>x.id??=uid()); S.goals.forEach(x=>x.id??=uid());
-const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(S));
+    return true;
+  }catch(e){
+    console.error("ASFITNESS save error",e);
+    try{alert("Nepavyko išsaugoti duomenų. Patikrinkite telefono atmintį arba naršyklės saugyklą.");}catch(_){}
+    return false;
+  }
+}
+window.save=save;
 let EXDB=[];
 let EXDB_READY=false;
 const EXMEDIA=new Map();
